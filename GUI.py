@@ -1,48 +1,50 @@
 import tkinter as tk
 
-class Calculator:
-    def __init__(self, root):
-        self.root = root
-        self.root.title("Simple Calculator")
-        self.root.geometry("300x400")
-        
-        self.expression = ""
-        
-        # Entry widget for displaying the expression
-        self.entry = tk.Entry(root, font=("Arial", 20), bd=10, relief="ridge", justify="right")
-        self.entry.grid(row=0, column=0, columnspan=4, ipadx=8, ipady=8)
+# Function to update entry field
+def press(value):
+    entry_var.set(entry_var.get() + str(value))
 
-        # Buttons for calculator
-        buttons = [
-            ("7", 1, 0), ("8", 1, 1), ("9", 1, 2), ("/", 1, 3),
-            ("4", 2, 0), ("5", 2, 1), ("6", 2, 2), ("*", 2, 3),
-            ("1", 3, 0), ("2", 3, 1), ("3", 3, 2), ("-", 3, 3),
-            ("C", 4, 0), ("0", 4, 1), ("=", 4, 2), ("+", 4, 3)
-        ]
+# Function to evaluate expression
+def calculate():
+    try:
+        result = eval(entry_var.get())  # Evaluates the expression
+        entry_var.set(result)  # Displays result
+    except:
+        entry_var.set("Error")  # Error handling
 
-        for text, row, col in buttons:
-            self.create_button(text, row, col)
+# Function to clear the entry
+def clear():
+    entry_var.set("")
 
-    def create_button(self, text, row, col):
-        btn = tk.Button(self.root, text=text, font=("Arial", 18), padx=20, pady=20, command=lambda: self.on_button_click(text))
-        btn.grid(row=row, column=col, sticky="nsew")
+# GUI setup
+root = tk.Tk()
+root.title("Calculator")
+root.geometry("300x400")
 
-    def on_button_click(self, char):
+# Entry widget
+entry_var = tk.StringVar()
+entry = tk.Entry(root, textvariable=entry_var, font=("Arial", 20), bd=10, relief="ridge", justify="right")
+entry.pack(fill="both", padx=10, pady=10)
+
+# Button layout
+buttons = [
+    ('7', '8', '9', '/'),
+    ('4', '5', '6', '*'),
+    ('1', '2', '3', '-'),
+    ('C', '0', '=', '+')
+]
+
+# Button grid
+for row in buttons:
+    frame = tk.Frame(root)
+    frame.pack(expand=True, fill="both")
+    for char in row:
         if char == "=":
-            try:
-                self.expression = str(eval(self.expression))  # Evaluate the expression
-            except:
-                self.expression = "Error"  # Handle errors
+            btn = tk.Button(frame, text=char, font=("Arial", 18), command=calculate, height=2, width=5)
         elif char == "C":
-            self.expression = ""  # Clear the entry field
+            btn = tk.Button(frame, text=char, font=("Arial", 18), command=clear, height=2, width=5)
         else:
-            self.expression += char  # Append the pressed button to the expression
-        
-        self.entry.delete(0, tk.END)
-        self.entry.insert(tk.END, self.expression)
+            btn = tk.Button(frame, text=char, font=("Arial", 18), command=lambda ch=char: press(ch), height=2, width=5)
+        btn.pack(side="left", expand=True, fill="both")
 
-# Run the application
-if __name__ == "__main__":
-    root = tk.Tk()
-    Calculator(root)
-    root.mainloop()
+root.mainloop()
